@@ -1,15 +1,15 @@
 import {expect} from 'chai';
 import {underline, bgBlue, bold, whiteBright} from 'chalk';
 
-import {parseScss} from '../src/cli';
+import {parse} from '../src/lib/scssParser';
 
 describe(bgBlue(whiteBright('cli')), () => {
 
-	describe(underline(bold('parseScss')), () => {
+	describe(underline(bold('parse()')), () => {
 
 		it('should return undefined when theme mark is not found', () => {
-			expect(parseScss('')).to.be.equal(undefined);
 		});
+
 
 	});
 });

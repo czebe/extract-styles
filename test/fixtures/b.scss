@@ -1,0 +1,16 @@
+
+.foo {
+	color: #ffff00;
+
+	&__a {
+		background-color: red; // @theme
+
+		&--b {
+			background-color: green; // @theme
+
+			&.c {
+				background-color: blue; // @theme
+			}
+		}
+	}
+}

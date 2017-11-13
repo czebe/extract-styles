@@ -1,0 +1,12 @@
+
+// Foo comment
+.foo {
+	color: #ffff00; // @theme: Foo comment 2
+	background-color: white; // @theme
+
+	/*
+		@theme:
+		Multiline comment
+		Not to be removed.
+	 */
+}

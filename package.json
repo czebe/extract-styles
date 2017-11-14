@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "nyc mocha --require babel-register --timeout 8000 './test/**/*.spec.js'",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "coverage": "nyc report --reporter=html --reporter=text-lcov > coverage.lcov && codecov",
     "develop": "npm-watch",
     "build": "babel src -d dist",
     "lint": "eslint src test",
@@ -43,7 +43,9 @@
   "homepage": "https://github.com/czebe/extract-styles#readme",
   "readme": "README.md",
   "dependencies": {
+    "defaults": "^1.0.3",
     "glob": "^7.1.2",
+    "lodash": "^4.17.4",
     "postcss": "^6.0.14",
     "postcss-scss": "^1.0.2"
   },

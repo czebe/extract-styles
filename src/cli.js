@@ -1,10 +1,33 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-import {listFiles, readFile} from './lib/io';
-import {parse} from './lib/scssParser';
+import {green, red, bold} from 'chalk';
 import defaults from 'defaults';
+import indentString from 'indent-string';
+import inquirer from 'inquirer';
+import {PathPrompt} from 'inquirer-path';
+import meow from 'meow';
 import _ from 'lodash';
+
+import {listFiles, readFile, saveFile} from './lib/io';
+import {parse} from './lib/scssParser';
+import * as Prompts from './lib/prompts';
+
+inquirer.registerPrompt('path', PathPrompt);
+
+const cli = meow(`
+	Usage
+		$ extract-styles [options]
+		
+	Options
+		--root [path] Start searching for .scss files here. Defaults to current project directory root.
+		--output [path] Output file path for the default theme to be saved.
+		--template [path] The template file for the resulting theme (include all custom imports etc).
+		
+	Examples
+		$ extract-styles
+		$ extract-styles --root src/components --output src/styles/themes/default/theme.scss --template src/styles/themes/theme.tpl	
+`);
 
 const DEFAULT_TEMPLATE = `
 /*
@@ -14,32 +37,55 @@ const DEFAULT_TEMPLATE = `
 */
 
 .theme-default {
-	<%= theme %>
+<%= theme %>
 }
 `;
 
-export const processFiles = async (options) => {
+const processFiles = async (options) => {
 
 	options = defaults(options, {
 		template: DEFAULT_TEMPLATE
 	});
 
-	const themes = await listFiles()
-		.then((files) => {
-			return files.map(async (result, file) => {
-				const scss = await readFile(file);
-				const parsedScss = parse(scss);
-				return parsedScss;
+	if (!options.root) {
+		await inquirer.prompt([
+			Prompts.root()
+		]).then((answers) => {
+			options = defaults(options, {
+				root: answers.root || process.cwd()
 			});
 		});
+	}
 
-	const compiled = _.template(options.template);
-	Promise.all(themes)
-		.then((t) => {
-			const themeContent = compiled({theme: t.join('\n')});
-			console.log(themeContent);
+	if (!options.output) {
+		await inquirer.prompt([
+			Prompts.output()
+		]).then((answers) => {
+			options = defaults(options, {
+				output: answers.output
+			});
+		});
+	}
+
+	await listFiles()
+		.then((files) => {
+			if (files.length) {
+				const filesRead = files.map(file => readFile(file, options.root));
+				return Promise.all(filesRead);
+			} else {
+				console.log(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')))
+				process.exit();
+			}
+		})
+		.then((filesRead) => {
+			const compiled = _.template(options.template);
+			const themes = filesRead.map(scss => parse(scss));
+			const themeContent = compiled({theme: indentString(themes.join('\n'), 1, '\t')});
+			return Promise.resolve(themeContent);
+		})
+		.then((content) => {
+			return saveFile(content, options.output, 'Theme file written to: ');
 		});
 };
 
-
-processFiles();
+processFiles(cli.flags);

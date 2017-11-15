@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 
-import fs from 'fs';
+import fs from 'fs-extra';
 import glob from 'glob';
+import {dirname} from 'path';
+import {green} from 'chalk';
 
 /**
  * List certain file types below the supplied root directory
@@ -36,5 +38,25 @@ export const readFile = (file) => {
 			if (err) return reject(err);
 			resolve(data);
 		});
+	});
+};
+
+/**
+ *
+ * @param {string} data - The data to be written
+ * @param {string} fileName - Desired path with filename and extension
+ * @param {string} [message = 'File saved to: '] - The message to be displayed in the console after successful save
+ * @returns {Promise}
+ */
+export const saveFile = (data, fileName, message = 'File saved to: ') => {
+	return new Promise((resolve, reject) => {
+		fs.ensureDir(dirname(fileName))
+			.then(() => {
+				fs.writeFile(fileName, data, (err) => {
+					if (err) return reject(err);
+					console.log(green.bold(message + fileName));
+					resolve();
+				});
+			});
 	});
 };

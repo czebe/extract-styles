@@ -8,8 +8,6 @@
 @import '_color-names';
 
 .theme-default {
-
-	// Your extracted definitions will come here:
-	<%= theme %>
-
+// Your extracted definitions will come here:
+<%= theme %>
 }

@@ -1,0 +1,10 @@
+
+.foo {
+	color: #ffff00; // regular comment
+	background-color: yellow; // @custom-mark
+
+	&__content {
+		width: 100%; // @custom-mark
+		height: 50%; // @theme
+	}
+}

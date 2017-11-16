@@ -64,7 +64,7 @@ export const parse = (scss, mark = DEFAULT_MARK) => {
 			}
 		});
 
-		parsed = root.toString().trim().replace(/^\s*[\r\n]{2,}/gm, '') + '\n'; // Remove extra empty lines
+		parsed = root.toString().trim();
 	}
 
 	return parsed;

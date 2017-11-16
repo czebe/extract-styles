@@ -74,25 +74,25 @@ describe(bgBlue(whiteBright('scssParser')), () => {
 
 		it('should detect theme mark in nested SCSS', () => {
 			const scss = parse(scssB).split('\n');
-			expect(scss.length).to.be.equal(14);
-			expect(scss[4]).to.include('background-color: green;');
-			expect(scss[6]).to.include('background-color: blue;');
-			expect(scss[12]).to.include('color: #ffff00;');
+			expect(scss.length).to.be.equal(18);
+			expect(scss[6]).to.include('background-color: green;');
+			expect(scss[9]).to.include('background-color: blue;');
+			expect(scss[16]).to.include('color: #ffff00;');
 		});
 
 		it('should keep @at-rule declarations when marked and remove if not', () => {
 			const scss = parse(scssC).split('\n');
-			expect(scss.length).to.be.equal(11);
+			expect(scss.length).to.be.equal(13);
 			expect(scss[1]).to.include('@include size(100%);');
-			expect(scss[2]).to.include('@for $i from 1 through 3 {');
-			expect(scss[7]).to.include('@if 5 < 3 {');
+			expect(scss[3]).to.include('@for $i from 1 through 3 {');
+			expect(scss[9]).to.include('@if 5 < 3 {');
 		});
 
 		it('should remove unmarked comments and keep marked ones', () => {
 			const scss = parse(scssD).split('\n');
-			expect(scss.length).to.be.equal(10);
+			expect(scss.length).to.be.equal(11);
 			expect(scss[0]).to.include('@theme: comment to stay');
-			expect(scss[5]).to.include('@theme:');
+			expect(scss[6]).to.include('@theme:');
 		});
 
 	});

@@ -22,7 +22,8 @@ const cli = meow(`
 	Options
 		--root [path] Start searching for .scss files here. Defaults to current project directory root.
 		--output [path] Output file path for the default theme to be saved.
-		--template [path] The template file for the resulting theme (include all custom imports etc).
+		--template [path] Optional: the template file for the resulting theme (include all custom imports etc).
+		--mark [string] Optional: a custom theme mark, that you'll use in comments to mark a line to be included in the theme. Default: @theme
 		
 	Examples
 		$ extract-styles
@@ -37,11 +38,19 @@ const DEFAULT_TEMPLATE = `
 */
 
 .theme-default {
+
 <%= theme %>
+
 }
 `;
 
 const processFiles = async (options) => {
+
+	console.log(process.pid);
+
+	if (options.template) {
+		options.template = await readFile(options.template);
+	}
 
 	options = defaults(options, {
 		template: DEFAULT_TEMPLATE
@@ -57,34 +66,31 @@ const processFiles = async (options) => {
 		});
 	}
 
-	if (!options.output) {
-		await inquirer.prompt([
-			Prompts.output()
-		]).then((answers) => {
-			options = defaults(options, {
-				output: answers.output
-			});
-		});
-	}
-
-	await listFiles()
+	await listFiles(options.root)
 		.then((files) => {
 			if (files.length) {
-				const filesRead = files.map(file => readFile(file, options.root));
+				const filesRead = files.map(file => readFile(file));
 				return Promise.all(filesRead);
 			} else {
-				console.log(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')))
+				console.log(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')));
 				process.exit();
 			}
 		})
-		.then((filesRead) => {
+		.then(async (filesRead) => {
+			if (!options.output) {
+				await inquirer.prompt([
+					Prompts.output()
+				]).then((answers) => {
+					options = defaults(options, {
+						output: answers.output
+					});
+				});
+			}
+
 			const compiled = _.template(options.template);
-			const themes = filesRead.map(scss => parse(scss));
-			const themeContent = compiled({theme: indentString(themes.join('\n'), 1, '\t')});
-			return Promise.resolve(themeContent);
-		})
-		.then((content) => {
-			return saveFile(content, options.output, 'Theme file written to: ');
+			const themes = filesRead.map(scss => parse(scss, options.mark));
+			const themeContent = compiled({theme: indentString(themes.join('\n\n').replace(/^\s*[\r\n]{2,}/gm, ''), 1, '\t')});
+			return saveFile(themeContent, options.output, 'Theme file written to: ');
 		});
 };
 

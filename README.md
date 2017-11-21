@@ -10,7 +10,7 @@ You can later load the resulting theme file, set the theme class on the body/roo
 
 Write your SCSS as you'd normally do, but mark the lines required in the theme file with `@theme`:
 
-```sass
+```scss
 .foo {
   width: 100%;
   color: #ffff00; // @theme
@@ -26,7 +26,7 @@ Write your SCSS as you'd normally do, but mark the lines required in the theme f
 
 After running **`extract-styles`**, you'll get a theme file with the marked lines extracted:
 
-```sass
+```scss
 .theme-default {
   .foo {
     color: #ffff00;

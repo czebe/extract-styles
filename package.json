@@ -1,6 +1,6 @@
 {
   "name": "extract-styles",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Extract-styles creates a theme package with lines from your SCSS files marked with // @theme",
   "main": "index.js",
   "scripts": {

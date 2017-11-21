@@ -32,6 +32,16 @@
     "ast",
     "parse"
   ],
+  "bin": {
+    "extract-styles": "dist/cli.js"
+  },
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=6"
+  },
   "author": {
     "name": "Marton Czebe",
     "email": "czebemarci@gmail.com"

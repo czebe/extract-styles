@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-import {green, red, bold} from 'chalk';
+import {red, bold} from 'chalk';
 import defaults from 'defaults';
 import indentString from 'indent-string';
 import inquirer from 'inquirer';
@@ -46,8 +46,6 @@ const DEFAULT_TEMPLATE = `
 
 const processFiles = async (options) => {
 
-	console.log(process.pid);
-
 	if (options.template) {
 		options.template = await readFile(options.template);
 	}
@@ -72,8 +70,9 @@ const processFiles = async (options) => {
 				const filesRead = files.map(file => readFile(file));
 				return Promise.all(filesRead);
 			} else {
-				console.log(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')));
-				process.exit();
+				// console.log(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')));
+				throw new Error(red(bold('No *.scss files found under current directory. Try supplying a different --root path.')));
+				// process.exit();
 			}
 		})
 		.then(async (filesRead) => {

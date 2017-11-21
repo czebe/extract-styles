@@ -6,7 +6,7 @@ import fs, {remove} from 'fs-extra';
 import {MESSAGES} from '../src/lib/prompts';
 import {readFile} from '../src/lib/io';
 
-const MOVEDOWN = (times = 1) => _.repeat('\x1B\x5B\x42', times); // Up: '\x1B\x5B\x41'
+// const MOVEDOWN = (times = 1) => _.repeat('\x1B\x5B\x42', times); // Up: '\x1B\x5B\x41'
 const ENTER = '\x0D';
 
 describe(bgBlue(whiteBright('cli')), () => {
@@ -114,31 +114,20 @@ describe(bgBlue(whiteBright('cli')), () => {
 			});
 		});
 
-		it.only('should exit when no SCSS file is found', async () => {
-			const output = 'test/tmp/a.scss';
-
-			await new Promise((resolve) => {
-				const proc = suppose('node', ['dist/cli.js'], {debug: true})
-					// .when(new RegExp(MESSAGES.root, 'i'), ENTER)
-					.end(() => {
-
-						console.log(proc.pid);
-
-						let runs = true;
-						try {
-							const k = process.kill(proc.pid, 0);
-							console.log('KKK', k)
-						} catch (e) {
-							console.log('ERRR', e);
-							runs = false;
-						}
-
-						expect(runs).to.be.equal(false);
-						resolve();
-					});
-			});
+		it('should exit when no SCSS file is found', async () => {
+			await new Promise((resolve, reject) => {
+				suppose('node', ['dist/cli.js'])
+					.when(new RegExp(MESSAGES.root, 'i'),  'src' + ENTER)
+					.on('error', reject)
+					.end(resolve);
+			})
+				.then(() => {
+					expect(false).to.equal(true);
+				})
+				.catch((e) => {
+					expect(e).to.be.an('error');
+				});
 		});
-
 
 	});
 });

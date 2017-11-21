@@ -20,7 +20,7 @@ export const listFiles = (root = process.cwd(), extension = 'scss') => {
 
 	return new Promise((resolve, reject) => {
 		glob(pattern, {cwd: root, ignore}, (err, files) => {
-		if (err) return reject(err);
+			if (err) return reject(err);
 			resolve(files);
 		});
 	});
